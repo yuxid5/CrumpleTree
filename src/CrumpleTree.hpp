@@ -1,6 +1,7 @@
 #ifndef __PROJ_FOUR_CRUMPLE_TREE_HPP
 #define __PROJ_FOUR_CRUMPLE_TREE_HPP
 
+#include <cstddef>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -18,6 +19,19 @@ class CrumpleTree {
    private:
     // fill in private member data here
     // If you need to declare private functions, do so here too.
+        struct Node{
+            Node(K k, V v)
+            : key{k}, value{v}, parent{nullptr}, right{nullptr}, left{nullptr}
+            {}
+            K key;
+            V value;
+            Node * parent;
+            Node * right;
+            Node * left;
+        };
+        Node* root;
+        size_t node_size;
+        unsigned total_level;
 
    public:
     CrumpleTree();
@@ -80,7 +94,9 @@ class CrumpleTree {
 };
 
 template <typename K, typename V>
-CrumpleTree<K, V>::CrumpleTree() {
+CrumpleTree<K, V>::CrumpleTree() 
+    :root{nullptr}, node_size{0}, total_level{0}
+{
     // TODO: Implement this
 }
 
@@ -92,39 +108,97 @@ CrumpleTree<K, V>::~CrumpleTree() {
 template <typename K, typename V>
 size_t CrumpleTree<K, V>::size() const noexcept {
     // TODO: Implement this
-    return {};
+    return node_size;
 }
 
 template <typename K, typename V>
 bool CrumpleTree<K, V>::empty() const noexcept {
     // TODO: Implement this
-    return {};
+    return root == nullptr;
 }
 
 template <typename K, typename V>
 bool CrumpleTree<K, V>::contains(const K &key) const noexcept {
     // TODO: Implement this
-    return {};
+    Node *temp = root;
+    while (temp != nullptr){
+        if (key == temp -> key){
+            return true;
+        }
+        else if (key < temp -> key){
+            temp = temp->left;
+        }
+        else{
+            temp = temp->right;
+        }
+    }
+    return false;
 }
 
 template <typename K, typename V>
 unsigned CrumpleTree<K, V>::level(const K &key) const {
     // TODO: Implement this
-    return {};
+    if (contains(key)){
+        Node * temp = root;
+        for (unsigned current_level{total_level}; current_level >= 0; current_level--){
+            if (key == temp -> key){
+                return current_level;
+            }
+            else if (key < temp -> key){
+                temp = temp->left;
+            }
+            else{
+                temp = temp->right;
+            }
+        }
+    }
+    else{
+        throw ElementNotFoundException("Not found");
+    }
 }
 
 template <typename K, typename V>
 V &CrumpleTree<K, V>::find(const K &key) {
     // TODO: Implement this
-    V tmp;
-    return tmp;
+    if (contains(key)){
+        Node * temp = root;
+        while (temp != nullptr){
+            if (key == temp->key){
+                return temp->value;
+            }
+            else if (key < temp -> key){
+                temp = temp -> left;
+            }
+            else{
+                temp = temp->right;
+            }
+        }
+    }
+    else{
+        throw ElementNotFoundException("Not found");
+    }
 }
 
 template <typename K, typename V>
 const V &CrumpleTree<K, V>::find(const K &key) const {
     // TODO: Implement this
-    V tmp;
-    return tmp;
+    if (contains(key)){
+        Node * temp = root;
+        while (temp != nullptr){
+            if (key == temp->key){
+                return temp->value;
+            }
+            else if (key < temp -> key){
+                temp = temp -> left;
+            }
+            else{
+                temp = temp->right;
+            }
+        }
+    }
+    else{
+        throw ElementNotFoundException("Not found");
+    }
 }
 
 template <typename K, typename V>
