@@ -114,6 +114,53 @@ TEST_CASE("Condition3_2:ExpectElementsNotInTreeAndLevelsCorrect",
 }
 
 
+TEST_CASE("Condition5_1:ExpectElementsNotInTreeAndLevelsCorrect",
+          "[Required][Insert][Erase][Contains][Level]") {
+    proj4::CrumpleTree<int, std::string> tree;
+    tree.insert(20, "are");
+    tree.insert(19, "you");
+    tree.insert(18, "following");
+    tree.insert(12, "from");
+    tree.insert(17, "lecture?");
+    REQUIRE(tree.size() == 5);
+    REQUIRE(tree.level(17) == 2);
+    REQUIRE(tree.level(12) == 1);
+    REQUIRE(tree.level(18) == 1);
+    REQUIRE(tree.level(19) == 3);
+}
+
+TEST_CASE("Condition5_2:ExpectElementsNotInTreeAndLevelsCorrect",
+          "[Required][Insert][Erase][Contains][Level]") {
+    proj4::CrumpleTree<int, std::string> tree;
+    tree.insert(20, "20");
+    tree.insert(19, "19");
+    tree.insert(18, "18");
+    tree.insert(12, "12");
+    tree.insert(9, "9");
+    tree.insert(17, "17");
+    tree.insert(7, "7");
+    tree.insert(5, "5");
+    tree.insert(13, "13");
+    tree.insert(15, "15");
+    tree.insert(6, "6");
+    tree.insert(16, "16");
+    tree.insert(14, "14");
+
+    REQUIRE(tree.size() == 13);
+    REQUIRE(tree.level(12) == 5);
+    REQUIRE(tree.level(18) == 4);
+    REQUIRE(tree.level(7) == 3);
+    REQUIRE(tree.level(15) == 3);
+    REQUIRE(tree.level(5) == 2);
+    REQUIRE(tree.level(13) == 2);
+    REQUIRE(tree.level(17) == 2);
+    REQUIRE(tree.level(19) == 2);
+    REQUIRE(tree.level(6) == 1);
+    REQUIRE(tree.level(9) == 1);
+    REQUIRE(tree.level(14) == 1);
+    REQUIRE(tree.level(16) == 1);
+    REQUIRE(tree.level(20) == 1);
+}
 // NOLINTEND
 
 }  // namespace
