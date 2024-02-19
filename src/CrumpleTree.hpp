@@ -21,17 +21,82 @@ class CrumpleTree {
     // If you need to declare private functions, do so here too.
         struct Node{
             Node(K k, V v)
-            : key{k}, value{v}, parent{nullptr}, right{nullptr}, left{nullptr}
+            : key{k}, value{v}, parent{nullptr}, right{nullptr}, left{nullptr}, level{0}, shape_l{1}, shape_r{1}
             {}
             K key;
             V value;
             Node * parent;
             Node * right;
             Node * left;
+            unsigned level;
+            size_t shape_l;
+            size_t shape_r;
         };
         Node* root;
         size_t node_size;
-        unsigned total_level;
+        void insert_r(Node*& current, Node* insert){
+            //insert the element
+            if (current == nullptr){
+                current = insert;
+                current-> level = 1;
+                node_size++;
+                return;
+            }
+            if (insert->key < current -> key){
+                insert_r(current->left, insert);
+                current -> left -> parent = current;
+            }
+            else{
+                insert_r(current->right, insert);
+                current -> right -> parent = current;
+            }
+            //update level and shape
+            if ((current-> right!= nullptr && current->right->level == current->level) || 
+            (current-> left!= nullptr && current->left->level == current->level)){
+                current->level++;
+            }
+            if (current->right != nullptr){
+                current->shape_r = current->level - current->right->level;
+                if (current->left == nullptr){
+                    current->shape_l = current->level - 0;
+                }
+            }
+            if (current->left != nullptr){
+                current->shape_l = current->level - current->left->level;
+                if (current->right == nullptr){
+                    current->shape_r = current->level - 0;
+                }
+            }
+            //rebalance
+            if (current->shape_l > 2){
+                current->shape_l -= 2;
+                current->level -= 2;
+                //记录当前的右边（稍后这个节点会变成当前的值）
+                Node* swap_node = current->right;
+                //现在的右边的是原来右侧的左边
+                current->right = current->right->left;
+                //当前变为当前右侧的子节点
+                swap_node -> left = current;
+                swap_node -> parent = current->parent;
+                current->parent = swap_node;
+                current = swap_node;
+                //更新当前替换的shape
+                current->shape_l = current->level - current->left->level;
+            }
+            //另一个方向
+            else if (current->shape_r > 2){
+                current->shape_r -= 2;
+                current->level -= 2;
+                Node* swap_node = current->left;
+                current->left = current->left->right;
+                swap_node->right = current;
+                swap_node -> parent = current->parent;
+                current->parent = swap_node;
+                current = swap_node;
+                current->shape_r = current->level - current->right->level;
+            }
+            
+        }
 
    public:
     CrumpleTree();
@@ -95,7 +160,7 @@ class CrumpleTree {
 
 template <typename K, typename V>
 CrumpleTree<K, V>::CrumpleTree() 
-    :root{nullptr}, node_size{0}, total_level{0}
+    :root{nullptr}, node_size{0}
 {
     // TODO: Implement this
 }
@@ -140,9 +205,9 @@ unsigned CrumpleTree<K, V>::level(const K &key) const {
     // TODO: Implement this
     if (contains(key)){
         Node * temp = root;
-        for (unsigned current_level{total_level}; current_level >= 0; current_level--){
+        while (temp != nullptr){
             if (key == temp -> key){
-                return current_level;
+                return temp->level;
             }
             else if (key < temp -> key){
                 temp = temp->left;
@@ -204,11 +269,17 @@ const V &CrumpleTree<K, V>::find(const K &key) const {
 template <typename K, typename V>
 void CrumpleTree<K, V>::insert(const K &key, const V &value) {
     // TODO: Implement this
+    if (contains(key)){
+        return;
+    }
+    Node * newNode = new Node(key, value);
+    insert_r(root, newNode);
 }
 
 template <typename K, typename V>
 void CrumpleTree<K, V>::remove(const K &key) {
     // TODO: Implement this
+    int placeholder = key;
 }
 
 template <typename K, typename V>
