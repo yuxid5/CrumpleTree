@@ -68,7 +68,8 @@ class CrumpleTree {
                 }
             }
             //rebalance
-            if (current->shape_l > 2){
+            //case 3
+            if (current->shape_l > 2 && current->right->shape_l == 2){
                 current->shape_l -= 2;
                 current->level -= 2;
                 //记录当前的右边（稍后这个节点会变成当前的值）
@@ -84,7 +85,7 @@ class CrumpleTree {
                 current->shape_l = current->level - current->left->level;
             }
             //另一个方向
-            else if (current->shape_r > 2){
+            else if (current->shape_r > 2 && current->left->shape_r == 2){
                 current->shape_r -= 2;
                 current->level -= 2;
                 Node* swap_node = current->left;
@@ -95,7 +96,83 @@ class CrumpleTree {
                 current = swap_node;
                 current->shape_r = current->level - current->right->level;
             }
-            
+            //case4
+            if (current->shape_l > 2 && current->right->shape_r == 1){
+                //层数左shape保持不变
+                current->shape_l -= 1;
+                current->level -= 1;
+                //记录当前的右边
+                Node* swap_node = current->right;
+                //现在的右边是原来右侧的左边
+                current->right = current->right->left;
+                //将右侧上升
+                swap_node->level++;
+                swap_node->left = current;
+                swap_node -> parent = current->parent;
+                current->parent = swap_node;
+                current = swap_node;
+                //更新当前的shape_l和shape_r
+                current->shape_l = current->level - current->left->level;
+                current->shape_r = current->level - current->right->level;
+            }
+            //case4另一个方向
+            else if (current->shape_r > 2 && current->left->shape_l == 1){
+                current->shape_r--;
+                current->level--;
+                Node* swap_node = current->left;
+                current->left = current->left->right;
+                swap_node->level++;
+                swap_node->right = current;
+                swap_node->parent = current->parent;
+                current->parent = swap_node;
+                current = swap_node;
+                current->shape_l = current->level - current->left->level;
+                current->shape_r = current->level - current->right->level;
+            }
+            //case5
+            if (current->shape_l > 2 && current->right->shape_r == 2){
+                //双下降
+                current->shape_l -= 2;
+                current -> level -= 2;
+                current->right->shape_r--;
+                current->right->level--;
+                //记录当前的右侧和右侧的左边
+                Node* swap_node = current->right->left;
+                Node* current_right = current->right;
+                //更新当前的右边，和当前右边的左边
+                current->right = swap_node->left;
+                current_right->left = swap_node->right;
+                //上升替换的node,连接节点
+                swap_node->level++;
+                swap_node->left = current;
+                swap_node->right = current_right;
+                swap_node->parent = current->parent;
+                current_right->parent = swap_node;
+                current->parent = swap_node;
+                current = swap_node;
+                //更改shape
+                current->shape_l = current->level - current->left->level;
+                current->shape_r = current->level - current->right->level;
+            }
+            else if (current->shape_r > 2 && current->left->shape_l == 2){
+                current->shape_r -= 2;
+                current -> level -= 2;
+                current->left->shape_l--;
+                current->left->level--;
+                Node* swap_node = current->left->right;
+                Node* current_left = current->left;
+                current->left = swap_node->right;
+                current_left->right = swap_node->left;
+                swap_node->level++;
+                swap_node->right = current;
+                swap_node->left = current_left;
+                swap_node->parent = current->parent;
+                current_left->parent = swap_node;
+                current->parent = swap_node;
+                current = swap_node;
+                current->shape_l = current->level - current->left->level;
+                current->shape_r = current->level - current->right->level;
+            }
         }
 
    public:

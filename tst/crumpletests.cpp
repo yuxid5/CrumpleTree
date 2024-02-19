@@ -89,7 +89,7 @@ TEST_CASE("Tree:RemoveDoesARemove:ExpectElementsNotInTreeAndLevelsCorrect",
 }
 
 //steptest
-TEST_CASE("Tree:5Inserts:ExpectSize6", "[Required][Basic][Insert][Size]") {
+TEST_CASE("insert_condition3", "[Required][Basic][Insert][Size]") {
     proj4::CrumpleTree<int, std::string> tree;
     tree.insert(5, "foo");
     tree.insert(3, "sna");
@@ -99,18 +99,21 @@ TEST_CASE("Tree:5Inserts:ExpectSize6", "[Required][Basic][Insert][Size]") {
     tree.insert(2, "two");
     tree.insert(1, "one");
 
-    REQUIRE(tree.size() == 6);
+    REQUIRE(tree.size() == 7);
 }
 
-
-TEST_CASE("insert_condition2", "[Required][Basic][Insert][Size]") {
+TEST_CASE("Condition3_2:ExpectElementsNotInTreeAndLevelsCorrect",
+          "[Required][Insert][Erase][Contains][Level]") {
     proj4::CrumpleTree<int, std::string> tree;
-    tree.insert(2, "two");
-    tree.insert(3, "the");
-    tree.insert(1, "one");
-
-    REQUIRE(tree.size() == 3);
+    tree.insert(20, "are");
+    tree.insert(19, "you");
+    tree.insert(18, "following");
+    tree.insert(12, "from");
+    tree.insert(9, "lecture?");
+    REQUIRE(tree.size() == 5);
 }
+
+
 // NOLINTEND
 
 }  // namespace
