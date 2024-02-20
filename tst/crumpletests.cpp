@@ -428,6 +428,8 @@ TEST_CASE("simple6left",
     REQUIRE(tree.level(50)==1);
     REQUIRE(tree.size() == 4);
 }
+
+
 // NOLINTEND
 
 }  // namespace
