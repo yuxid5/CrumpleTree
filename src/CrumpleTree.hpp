@@ -416,6 +416,40 @@ class CrumpleTree {
             }
 
         }
+        void destructor_helper(Node* del_node){
+            if (del_node != nullptr){
+                destructor_helper(del_node->right);
+                destructor_helper(del_node->left);
+                delete del_node;
+            }
+        }
+        void inorder_help(Node* root, std::vector<K> &vector) const{
+            if (root == nullptr){
+                return;
+            }
+            inorder_help(root->left, vector);
+            vector.push_back(root->key);
+            inorder_help(root->right, vector);
+        }
+
+        void preorder_help(Node* root, std::vector<K> &vector) const{
+            if (root == nullptr){
+                return;
+            }
+            vector.push_back(root->key);
+            preorder_help(root->left, vector);
+            preorder_help(root->right, vector);
+        }
+
+        void postorder_help(Node* root, std::vector<K> &vector) const{
+            if (root == nullptr){
+                return;
+            }
+            postorder_help(root->left, vector);
+            postorder_help(root->right, vector);
+            vector.push_back(root->key);
+        }
+
 
    public:
     CrumpleTree();
@@ -487,6 +521,7 @@ CrumpleTree<K, V>::CrumpleTree()
 template <typename K, typename V>
 CrumpleTree<K, V>::~CrumpleTree() {
     // TODO: Implement this
+    destructor_helper(root);
 }
 
 template <typename K, typename V>
@@ -605,19 +640,25 @@ void CrumpleTree<K, V>::remove(const K &key) {
 template <typename K, typename V>
 std::vector<K> CrumpleTree<K, V>::inOrder() const {
     // TODO: Implement this
-    return {};
+    std::vector<K> inorder_vec;
+    inorder_help(root, inorder_vec);
+    return inorder_vec;
 }
 
 template <typename K, typename V>
 std::vector<K> CrumpleTree<K, V>::preOrder() const {
     // TODO: Implement this
-    return {};
+    std::vector<K> preorder_vec;
+    preorder_help(root, preorder_vec);
+    return preorder_vec;
 }
 
 template <typename K, typename V>
 std::vector<K> CrumpleTree<K, V>::postOrder() const {
     // TODO: Implement this
-    return {};
+    std::vector<K> postorder_vec;
+    postorder_help(root, postorder_vec);
+    return postorder_vec;
 }
 
 }  // namespace shindler::ics46::project4
