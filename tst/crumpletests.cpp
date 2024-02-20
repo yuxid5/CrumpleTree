@@ -407,6 +407,27 @@ TEST_CASE("condition6left",
     REQUIRE(tree.level(41)==1);
 }
 
+TEST_CASE("simple6left",
+          "[Required][Insert][Erase][Contains][Level]") {
+    proj4::CrumpleTree<int, std::string> tree;
+    tree.insert(20, "20");
+    tree.insert(50, "50");
+    tree.insert(10, "10");
+    tree.insert(1, "1");
+    tree.insert(5, "5");
+    tree.insert(9, "45");
+    tree.insert(25, "25");
+    tree.insert(23, "23");
+    tree.remove(23);
+    tree.remove(1);
+    tree.remove(9);
+    tree.remove(5);
+    REQUIRE(tree.level(25)==3);
+    REQUIRE(tree.level(10)==2);
+    REQUIRE(tree.level(20)==1);
+    REQUIRE(tree.level(50)==1);
+    REQUIRE(tree.size() == 4);
+}
 // NOLINTEND
 
 }  // namespace
