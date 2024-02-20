@@ -382,6 +382,31 @@ TEST_CASE("simple5right",
     REQUIRE_FALSE(tree.contains(45));
 }
 
+TEST_CASE("condition6left",
+          "[Required][Basic][Insert][Contains]") {
+    
+    proj4::CrumpleTree<int, int> tree;
+    tree.insert(19, 19);
+    tree.insert(18, 18);
+    tree.insert(40, 40);
+    tree.insert(30, 30);
+    tree.insert(41, 41);
+    tree.insert(29, 29);
+    tree.insert(31, 31);
+    tree.remove(18);
+    tree.remove(29);
+    tree.insert(32, 32);
+    tree.insert(42, 42);
+    tree.remove(42);
+    tree.remove(19);
+    REQUIRE(tree.size()==5);
+    REQUIRE(tree.level(31)==3);
+    REQUIRE(tree.level(40)==2);
+    REQUIRE(tree.level(30)==1);
+    REQUIRE(tree.level(32)==1);
+    REQUIRE(tree.level(41)==1);
+}
+
 // NOLINTEND
 
 }  // namespace
