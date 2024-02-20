@@ -591,9 +591,7 @@ V &CrumpleTree<K, V>::find(const K &key) {
             }
         }
     }
-    else{
-        throw ElementNotFoundException("Not found");
-    }
+    throw ElementNotFoundException("Not found");
 }
 
 template <typename K, typename V>
@@ -613,9 +611,7 @@ const V &CrumpleTree<K, V>::find(const K &key) const {
             }
         }
     }
-    else{
-        throw ElementNotFoundException("Not found");
-    }
+    throw ElementNotFoundException("Not found");
 }
 
 template <typename K, typename V>

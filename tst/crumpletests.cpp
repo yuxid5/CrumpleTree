@@ -429,6 +429,13 @@ TEST_CASE("simple6left",
     REQUIRE(tree.size() == 4);
 }
 
+TEST_CASE("find_test",
+          "[Required][Insert][Erase][Contains][Level]") {
+    proj4::CrumpleTree<int, int> tree;
+    tree.insert(1, 1);
+    const proj4::CrumpleTree<int, int> & treeRef= tree;
+    REQUIRE(treeRef.find(1) == 1);
+}
 
 // NOLINTEND
 
