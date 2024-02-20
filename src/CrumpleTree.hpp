@@ -418,8 +418,8 @@ class CrumpleTree {
         }
         void destructor_helper(Node* del_node){
             if (del_node != nullptr){
-                destructor_helper(del_node->right);
                 destructor_helper(del_node->left);
+                destructor_helper(del_node->right);
                 delete del_node;
             }
         }
