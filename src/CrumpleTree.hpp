@@ -244,16 +244,177 @@ class CrumpleTree {
             }
             //rebalance
             //case 2
-            if (current->shape_l == 3 && current->shape_r == 2){
+            if ((current->shape_l == 3 && current->shape_r == 2) || (current->shape_r == 3 && current->shape_l == 2)){
                 current->level--;
                 current->shape_l--;
                 current -> shape_r--;
             }
-            else if (current->shape_r == 3 && current->shape_l == 2){
+            // else if (current->shape_r == 3 && current->shape_l == 2){
+            //     current->level--;
+            //     current->shape_l--;
+            //     current -> shape_r--;
+            // }
+
+            //case 3
+            if (current->shape_l == 3 && current->shape_r == 1 && current->right->shape_l == 1 && current->right->shape_r == 1){
+                //现在的下降
                 current->level--;
                 current->shape_l--;
-                current -> shape_r--;
+                Node* current_right = current->right;
+                //现在的右边是原来右边的左边
+                current->right = current_right->left;
+                //更新parent
+                current_right->parent = current->parent;
+                current->parent = current_right;
+                //更新原来右边的左边
+                current_right->left = current;
+                //替换current
+                current = current_right;
+                //往上升,更新shape
+                current->level ++;
+                current->shape_l = current->level - current->left->level;
+                current->shape_r = current->level - current->right->level;
             }
+            else if(current->shape_r == 3 && current->shape_l == 1 && current->left->shape_r == 1 && current->left->shape_l == 1){
+                current->level--;
+                current->shape_r--;
+                Node* current_left = current->left;
+                current->left = current_left->right;
+                current_left->parent = current->parent;
+                current->parent = current_left;
+                current_left->right = current;
+                current = current_left;
+                current->level ++;
+                current->shape_l = current->level - current->left->level;
+                current->shape_r = current->level - current->right->level;
+            }
+            //case_4A
+            if(current->shape_l == 3 && current->shape_r == 1 && current->left != nullptr && current->right->shape_l == 2 
+                && current->right->left != nullptr && current->right->shape_r == 1){
+                //现在的下降
+                current->level--;
+                current->shape_l--;
+                Node* current_right = current->right;
+                //现在的右边是原来的右边的左边,并更新shape
+                current->right = current->right->left;
+                current->shape_r = current->level - current->right->level;
+                //更新parent
+                current_right->parent = current->parent;
+                current->parent = current_right;
+                //更新原来右边的左边
+                current_right->left = current;
+                //替换current
+                current = current_right;
+                //往上升,更新shape
+                current->level ++;
+                current->shape_l = current->level - current->left->level;
+                current->shape_r = current->level - current->right->level;
+            }
+            else if(current->shape_r == 3 && current->shape_l == 1 && current->right != nullptr && current->left->shape_r == 2 
+                && current->left->right != nullptr && current->left->shape_l == 1){
+                current->level--;
+                current->shape_r--;
+                Node* current_left = current->left;
+                current->left = current->left->right;
+                current->shape_l = current->level - current->left->level;
+                current->left->parent = current->parent;
+                current->parent = current_left;
+                current_left->right = current;
+                current = current_left;
+                current->level ++;
+                current->shape_l = current->level - current->left->level;
+                current->shape_r = current->level - current->right->level;
+            }
+            //case4b
+            if(current->shape_l == 3 && current->shape_r == 1 && current->left == nullptr && current->right->shape_l == 2 
+                && current->right->left == nullptr && current->right->shape_r == 1){
+                //下降两格
+                current -> level -= 2;
+                current->shape_l -= 2;
+                //记录原来的right
+                Node* current_right = current->right;
+                //现在的右边是原来的右边的左边也就是nullptr
+                current->right = current->right->left;
+                //更新parent
+                current_right->parent = current->parent;
+                current->parent = current_right;
+                //更新原来右边的左边
+                current_right->left = current;
+                //替换current
+                current = current_right;
+                //更新shape
+                current->shape_l = current->level - current->left->level;
+                current->shape_r = current->level - current->right->level;
+            }
+            else if(current->shape_r == 3 && current->shape_l == 1 && current->right == nullptr && current->left->shape_r == 2 
+                && current->left->right == nullptr && current->left->shape_l == 1){
+                current->level -= 2;
+                current->shape_r -= 2;
+                Node* current_left = current->left;
+                current->left = current->left->right;
+                current_left->parent = current->parent;
+                current->parent = current_left;
+                current_left -> right = current;
+                current = current_left;
+                current->shape_l = current->level - current->left->level;
+                current->shape_r = current->level - current->right->level;
+            }
+            //case5
+            if (current->shape_l == 3 && current->shape_r == 1 && current->right->shape_l == 1 && current->right->shape_r == 2){
+                current->level -= 2;
+                current->shape_l -= 2;
+                current->right->level -= 1;
+                current->right->shape_r -= 1;
+                Node* newTarget = current->right->left;
+                Node* current_right = current->right;
+                current->right = newTarget->left;
+                current_right -> left = newTarget->right;
+                newTarget->level += 2;
+                newTarget->left = current;
+                newTarget->right = current_right;
+                newTarget->parent = current->parent;
+                current_right->parent = newTarget;
+                current->parent = newTarget;
+                current = newTarget;
+                current->shape_l = current->level - current->left->level;
+                current->shape_r = current->level - current->right->level;
+            }
+            else if(current->shape_r == 3 && current->shape_l == 1 && current->left->shape_r == 1 && current->left->shape_l == 2){
+                current->level -= 2;
+                current->shape_r -= 2;
+                current->left->level -= 1;
+                current->left->shape_l -= 1;
+                Node* newTarget = current->left->right;
+                Node* current_left = current->left;
+                current->left = newTarget->right;
+                current_left->right = newTarget->left;
+                newTarget->level += 2;
+                newTarget->right = current;
+                newTarget->left = current_left;
+                newTarget->parent = current->parent;
+                current_left->parent = newTarget;
+                current->parent = newTarget;
+                current = newTarget;
+                current->shape_l = current->level - current->left->level;
+                current->shape_r = current->level - current->right->level;
+            }
+            //case6
+            if (current->shape_l == 3 && current->shape_r == 1 && current->right->shape_l == 2 && current->right->shape_r == 2){
+                current->level--;
+                current->shape_l--;
+                current->right->level--;
+                current->right->shape_l--;
+                current->right->shape_r--;
+
+            }
+            else if (current->shape_r == 3 && current->shape_l == 1 && current->left->shape_r == 2 && current->left->shape_l == 2){
+                current->level--;
+                current->shape_r--;
+                current->left->level--;
+                current->left->shape_l--;
+                current->left->shape_r--;
+            }
+
         }
 
    public:
@@ -375,9 +536,7 @@ unsigned CrumpleTree<K, V>::level(const K &key) const {
             }
         }
     }
-    else{
-        throw ElementNotFoundException("Not found");
-    }
+    throw ElementNotFoundException("Not found");
 }
 
 template <typename K, typename V>
