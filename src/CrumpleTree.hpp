@@ -1,9 +1,11 @@
 #ifndef __PROJ_FOUR_CRUMPLE_TREE_HPP
 #define __PROJ_FOUR_CRUMPLE_TREE_HPP
 
+#include <array>
 #include <cstddef>
 #include <stdexcept>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 namespace shindler::ics46::project4 {
@@ -174,6 +176,85 @@ class CrumpleTree {
                 current->shape_r = current->level - current->right->level;
             }
         }
+        void remove_helper(Node*& current, const K &key){
+            if (key == current->key){
+                //符合条件删除
+                if (current->left == nullptr && current->right == nullptr){
+                    delete current;
+                    current = nullptr;
+                    node_size--;
+                    return;
+                }
+                //找successor
+                if (current->right != nullptr){
+                    Node* succssor = current -> right;
+                    while(succssor->left != nullptr){
+                        succssor = succssor->left;
+                    }
+                    if (succssor->left == nullptr && succssor->right == nullptr){
+                        std::swap(current->key, succssor->key);
+                        std::swap(current->value, succssor->value);
+                        remove_helper(current->right, key);
+                    }
+                    else if (succssor->left == nullptr && succssor->right != nullptr){
+                        std::swap(current->key, succssor->key);
+                        std::swap(current->value, succssor->value);
+                        std::swap(succssor->key, succssor->right->key);
+                        std::swap(succssor->value, succssor->right->value);
+                        remove_helper(current->right, key);
+                    }
+                    else{
+                        std::swap(current->key, succssor->key);
+                        std::swap(current->value, succssor->value);
+                        std::swap(succssor->key, succssor->left->key);
+                        std::swap(succssor->value, succssor->left->value);
+                        remove_helper(current->right, key);
+                    }
+                }
+                else{
+                    std::swap(current->key, current->left->key);
+                    std::swap(current->value, current->left->value);
+                    remove_helper(current->left, key);
+                }
+            }
+            //如果key小于当前目标
+            else if (key < current->key && current->left != nullptr){
+                remove_helper(current->left, key);
+            }
+            else{
+                remove_helper(current->right, key);
+            }
+            //update level and shape after delete
+            if (current-> right == nullptr && current->left == nullptr && current->level > 1){
+                current->level--;
+                current->shape_l = current->level - 0;
+                current->shape_r = current->level - 0;
+            }
+            if (current->right != nullptr){
+                current->shape_r = current->level - current->right->level;
+                if (current->left == nullptr){
+                    current->shape_l = current->level - 0;
+                }
+            }
+            if (current->left != nullptr){
+                current->shape_l = current->level - current->left->level;
+                if (current->right == nullptr){
+                    current->shape_r = current->level - 0;
+                }
+            }
+            //rebalance
+            //case 2
+            if (current->shape_l == 3 && current->shape_r == 2){
+                current->level--;
+                current->shape_l--;
+                current -> shape_r--;
+            }
+            else if (current->shape_r == 3 && current->shape_l == 2){
+                current->level--;
+                current->shape_l--;
+                current -> shape_r--;
+            }
+        }
 
    public:
     CrumpleTree();
@@ -267,7 +348,7 @@ bool CrumpleTree<K, V>::contains(const K &key) const noexcept {
         if (key == temp -> key){
             return true;
         }
-        else if (key < temp -> key){
+        if (key < temp -> key){
             temp = temp->left;
         }
         else{
@@ -286,7 +367,7 @@ unsigned CrumpleTree<K, V>::level(const K &key) const {
             if (key == temp -> key){
                 return temp->level;
             }
-            else if (key < temp -> key){
+            if (key < temp -> key){
                 temp = temp->left;
             }
             else{
@@ -308,7 +389,7 @@ V &CrumpleTree<K, V>::find(const K &key) {
             if (key == temp->key){
                 return temp->value;
             }
-            else if (key < temp -> key){
+            if (key < temp -> key){
                 temp = temp -> left;
             }
             else{
@@ -330,7 +411,7 @@ const V &CrumpleTree<K, V>::find(const K &key) const {
             if (key == temp->key){
                 return temp->value;
             }
-            else if (key < temp -> key){
+            if (key < temp -> key){
                 temp = temp -> left;
             }
             else{
@@ -356,7 +437,10 @@ void CrumpleTree<K, V>::insert(const K &key, const V &value) {
 template <typename K, typename V>
 void CrumpleTree<K, V>::remove(const K &key) {
     // TODO: Implement this
-    int placeholder = key;
+    if (!contains(key)){
+        return;
+    }
+    remove_helper(root, key);
 }
 
 template <typename K, typename V>
